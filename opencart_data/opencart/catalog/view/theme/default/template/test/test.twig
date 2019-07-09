@@ -1,0 +1,42 @@
+{{ header }}
+
+<?php print_r($data`); ?>
+
+
+<div id="product-search" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h2>Тестовая страница</h2>
+        <h1>Products</h1>
+
+<!-- Тут гуглить как работает TWIG шаблонизатор -->
+
+{# пример вызова переменных из data #}
+    
+    {% for categorie in categories %}
+      <li>{{ categorie.name }}</li>
+
+      {% for product in products %}  
+        <li>{{ product.name }}</li>
+      {% endfor %}
+            
+    {% endfor %}
+
+    {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+{{ footer }}
