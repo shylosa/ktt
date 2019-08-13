@@ -1,42 +1,85 @@
-version: '2'
+version: '3.7'
+
+networks:
+  ktt-net:
+    driver: bridge
+
 services:
-  ktt_mariadb:
-    image: 'bitnami/mariadb:10.3'
-    environment:
-      - MARIADB_USER=bn_opencart
-      - MARIADB_DATABASE=bitnami_opencart
-      - ALLOW_EMPTY_PASSWORD=yes
+  ktt_nginx:
+    build: ./docker/nginx
+    container_name: ktt_nginx
+    ports:
+      - '86:80'
     volumes:
-      - './mariadb_data:/bitnami'
+      - ./docker/nginx/conf:/etc/nginx/conf.d
+      - .:/var/www/html
+      - ./docker/nginx/log/:/var/log/nginx
+      - /tmp:/tmp
+    depends_on:
+      - ktt_php
+    networks:
+      - ktt-net
+
+  ktt_php:
+    build: ./docker/php
+    container_name: ktt_php
+    volumes:
+      - .:/var/www/html
+      - /tmp:/tmp
+      - ~/.composer:/var/www/.composer
+    depends_on:
+      - ktt_mysql
+    networks:
+      - ktt-net
+
+  ktt_mysql:
+    image: mysql:5.7
+    container_name: ktt_mysql
+    ports:
+      - "3386:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=kttdb
+      - MYSQL_USER=opencart
+      - MYSQL_PASSWORD=root
+    volumes:
+      - ktt_mysql_data:/var/lib/mysql
+    networks:
+      - ktt-net
+
   ktt_opencart:
-    image: 'bitnami/opencart:3'
-    environment:
-      - MARIADB_HOST=ktt_mariadb
-      - MARIADB_PORT_NUMBER=3306
-      - OPENCART_DATABASE_USER=bn_opencart
-      - OPENCART_DATABASE_NAME=bitnami_opencart
-      - OPENCART_HOST=localhost
-      - ALLOW_EMPTY_PASSWORD=yes
+    build: ./docker/opencart
+    container_name: ktt_opencart
     ports:
-      - '81:80'
-      - '443:443'
+      - '8006:80'
+      - '446:443'
     volumes:
-      - './opencart_data:/bitnami'
+      - ktt_opencart_data:/var/www/html
     depends_on:
-      - ktt_mariadb
+      - ktt_mysql
+    networks:
+      - ktt-net
+
   ktt_phpmyadmin:
-    image: 'bitnami/phpmyadmin:4'
+    image: phpmyadmin/phpmyadmin
+    container_name: ktt_phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+    restart: always
     ports:
-      - '82:80'
-      - '444:443'
-    depends_on:
-      - ktt_mariadb
+      - 8086:80
     volumes:
-      - './phpmyadmin_data:/bitnami'
+      - /sessions
+    depends_on:
+      - ktt_mysql
+    networks:
+      - ktt-net
+
 volumes:
-  ktt_mariadb_data:
-    driver: local
+  ktt_mysql_data:
   ktt_opencart_data:
-    driver: local
-  ktt_phpmyadmin_data:
-    driver: local
+    driver_opts:
+      type: none
+      device:  /home/serhii/sproject/ktt/opencart_data/
+      o: bind
+
