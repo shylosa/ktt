@@ -10,6 +10,7 @@ class ModelCatalogProduct extends Model {
 		if ($query->num_rows) {
 			return array(
 				'product_id'       => $query->row['product_id'],
+				'master_id'        => $query->row['master_id'],
 				'name'             => $query->row['name'],
 				'description'      => $query->row['description'],
 				'meta_title'       => $query->row['meta_title'],
@@ -24,6 +25,8 @@ class ModelCatalogProduct extends Model {
 				'isbn'             => $query->row['isbn'],
 				'mpn'              => $query->row['mpn'],
 				'location'         => $query->row['location'],
+				'variant'          => (array)json_decode($query->row['variant'], true),
+				'override'         => (array)json_decode($query->row['override'], true),
 				'quantity'         => $query->row['quantity'],
 				'stock_status'     => $query->row['stock_status'],
 				'image'            => $query->row['image'],
@@ -114,7 +117,7 @@ class ModelCatalogProduct extends Model {
 				}
 
 				if (!empty($data['filter_description'])) {
-					$sql .= " OR pd.description LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+					$sql .= " OR pd.description LIKE '%" . $this->db->escape((string)$data['filter_name']) . "%'";
 				}
 			}
 
@@ -200,7 +203,10 @@ class ModelCatalogProduct extends Model {
 		$query = $this->db->query($sql);
 
 		foreach ($query->rows as $result) {
-			$product_data[$result['product_id']] = $this->getProduct($result['product_id']);
+			// for never get one more time with same product id
+			if (!isset($product_data[$result['product_id']])){
+				$product_data[$result['product_id']] = $this->getProduct($result['product_id']);
+			}	
 		}
 
 		return $product_data;
@@ -471,7 +477,7 @@ class ModelCatalogProduct extends Model {
 				}
 
 				if (!empty($data['filter_description'])) {
-					$sql .= " OR pd.description LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+					$sql .= " OR pd.description LIKE '%" . $this->db->escape((string)$data['filter_name']) . "%'";
 				}
 			}
 

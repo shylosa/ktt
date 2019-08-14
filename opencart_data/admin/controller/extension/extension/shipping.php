@@ -85,16 +85,16 @@ class ControllerExtensionExtensionShipping extends Controller {
 			foreach ($files as $file) {
 				$extension = basename($file, '.php');
 
-				$this->load->language('extension/shipping/' . $extension, 'extension');
+				$this->load->language('extension/shipping/' . $extension, $extension . '_');
 
 				$data['extensions'][] = array(
-					'name'       => $this->language->get('extension')->get('heading_title'),
+					'name'       => $this->language->get($extension . '_heading_title'),
 					'status'     => $this->config->get('shipping_' . $extension . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 					'sort_order' => $this->config->get('shipping_' . $extension . '_sort_order'),
-					'install'    => $this->url->link('extension/extension/shipping/install', 'user_token=' . $this->session->data['user_token'] . '&extension=' . $extension, true),
-					'uninstall'  => $this->url->link('extension/extension/shipping/uninstall', 'user_token=' . $this->session->data['user_token'] . '&extension=' . $extension, true),
+					'install'    => $this->url->link('extension/extension/shipping/install', 'user_token=' . $this->session->data['user_token'] . '&extension=' . $extension),
+					'uninstall'  => $this->url->link('extension/extension/shipping/uninstall', 'user_token=' . $this->session->data['user_token'] . '&extension=' . $extension),
 					'installed'  => in_array($extension, $extensions),
-					'edit'       => $this->url->link('extension/shipping/' . $extension, 'user_token=' . $this->session->data['user_token'], true)
+					'edit'       => $this->url->link('extension/shipping/' . $extension, 'user_token=' . $this->session->data['user_token'])
 				);
 			}
 		}

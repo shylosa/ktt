@@ -16,9 +16,9 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 		$data['orderNo']      = $order_info['order_id'];
 		$data['orderAmount']  = intval(round($order_info['total'], 2) * 100);
 		$data['orderTime']    = date('Y-m-d H:i:s');
-		$data['pageUrl']      = $this->url->link('checkout/checkout', '', true);
-		$data['serverUrl']    = $this->url->link('extension/payment/pilibaba/callback', '', true);
-		$data['redirectUrl']  = $this->url->link('checkout/success', '', true);
+		$data['pageUrl']      = $this->url->link('checkout/checkout', 'language=' . $this->config->get('config_language'));
+		$data['serverUrl']    = $this->url->link('extension/payment/pilibaba/callback', 'language=' . $this->config->get('config_language'));
+		$data['redirectUrl']  = $this->url->link('checkout/success', 'language=' . $this->config->get('config_language'));
 		$data['notifyType']   = 'json';
 		$data['shipper']      = 0;
 		$data['tax']          = ($this->config->get('config_tax')) ? 0 : $this->model_extension_payment_pilibaba->getOrderTaxAmount($order_info['order_id']);
@@ -39,7 +39,7 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 				'name'       => $product['name'],
 				'pictureUrl' => $this->config->get('config_url') . 'image/' . $product['image'],
 				'price'      => intval(round($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax'), $this->session->data['currency']), 2) * 100),
-				'productUrl' => str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $product['product_id'])),
+				'productUrl' => str_replace('&amp;', '&', $this->url->link('product/product', 'language=' . $this->config->get('config_language') . '&product_id=' . $product['product_id'])),
 				'productId'  => $product['product_id'],
 				'quantity'   => $product['quantity'],
 				'weight'     => $weight
@@ -76,20 +76,13 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 			if (!$this->cart->hasProducts() || (!$this->cart->hasStock() && !$this->config->get('config_stock_checkout'))) {
 				$this->model_extension_payment_pilibaba->log('No physical products. Redirecting to checkout/cart');
 
-				$this->response->redirect($this->url->link('checkout/cart'));
+				$this->response->redirect($this->url->link('checkout/cart', 'language=' . $this->config->get('config_language')));
 			} else {
 				$order_data = array();
 
 				$totals = array();
 				$taxes = $this->cart->getTaxes();
 				$total = 0;
-
-				// Because __call can not keep var references so we put them into an array.
-				$total_data = array(
-					'totals' => &$totals,
-					'taxes'  => &$taxes,
-					'total'  => &$total
-				);
 
 				$this->load->model('setting/extension');
 
@@ -107,8 +100,8 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 					if ($this->config->get('total_' . $result['code'] . '_status')) {
 						$this->load->model('extension/total/' . $result['code']);
 
-						// We have to put the totals in an array so that they pass by reference.
-						$this->{'model_extension_total_' . $result['code']}->getTotal($total_data);
+						// __call can not pass-by-reference so we get PHP to call it as an anonymous function.
+						($this->{'model_extension_total_' . $result['code']}->getTotal)($totals, $taxes, $total);
 					}
 				}
 
@@ -233,7 +226,7 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 				}
 
 				$order_data['comment'] = '';
-				$order_data['total'] = $total_data['total'];
+				$order_data['total'] = $total;
 
 				if (isset($this->request->cookie['tracking'])) {
 					$order_data['tracking'] = $this->request->cookie['tracking'];
@@ -241,9 +234,9 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 					$subtotal = $this->cart->getSubTotal();
 
 					// Affiliate
-					$this->load->model('affiliate/affiliate');
+					$this->load->model('account/affiliate');
 
-					$affiliate_info = $this->model_affiliate_affiliate->getAffiliateByCode($this->request->cookie['tracking']);
+					$affiliate_info = $this->model_account_affiliate->getAffiliateByTracking($this->request->cookie['tracking']);
 
 					if ($affiliate_info) {
 						$order_data['affiliate_id'] = $affiliate_info['affiliate_id'];
@@ -254,9 +247,9 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 					}
 
 					// Marketing
-					$this->load->model('checkout/marketing');
+					$this->load->model('marketing/marketing');
 
-					$marketing_info = $this->model_checkout_marketing->getMarketingByCode($this->request->cookie['tracking']);
+					$marketing_info = $this->model_marketing_marketing->getMarketingByCode($this->request->cookie['tracking']);
 
 					if ($marketing_info) {
 						$order_data['marketing_id'] = $marketing_info['marketing_id'];
@@ -308,9 +301,9 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 				$data['orderNo']      = $order_info['order_id'];
 				$data['orderAmount']  = intval(round($order_info['total'], 2) * 100);
 				$data['orderTime']    = date('Y-m-d H:i:s');
-				$data['pageUrl']      = $this->url->link('checkout/checkout', '', true);
-				$data['serverUrl']    = $this->url->link('extension/payment/pilibaba/callback', '', true);
-				$data['redirectUrl']  = $this->url->link('checkout/success', '', true);
+				$data['pageUrl']      = $this->url->link('checkout/checkout', 'language=' . $this->config->get('config_language'));
+				$data['serverUrl']    = $this->url->link('extension/payment/pilibaba/callback', 'language=' . $this->config->get('config_language'));
+				$data['redirectUrl']  = $this->url->link('checkout/success', 'language=' . $this->config->get('config_language'));
 				$data['notifyType']   = 'json';
 				$data['shipper']      = intval(round($this->config->get('payment_pilibaba_shipping_fee'), 2) * 100);
 				$data['tax']          = ($this->config->get('config_tax')) ? 0 : $this->model_extension_payment_pilibaba->getOrderTaxAmount($order_info['order_id']);
@@ -331,7 +324,7 @@ class ControllerExtensionPaymentPilibaba extends Controller {
 						'name'       => $product['name'],
 						'pictureUrl' => $this->config->get('config_url') . 'image/' . $product['image'],
 						'price'      => intval(round($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax'), $this->session->data['currency']), 2) * 100),
-						'productUrl' => str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $product['product_id'])),
+						'productUrl' => str_replace('&amp;', '&', $this->url->link('product/product', 'language=' . $this->config->get('config_language') . '&product_id=' . $product['product_id'])),
 						'productId'  => $product['product_id'],
 						'quantity'   => $product['quantity'],
 						'weight'     => $weight

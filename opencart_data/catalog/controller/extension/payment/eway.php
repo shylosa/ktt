@@ -9,7 +9,7 @@ class ControllerExtensionPaymentEway extends Controller {
 
 		for ($i = 1; $i <= 12; $i++) {
 			$data['months'][] = array(
-				'text'  => sprintf('%02d', $i),
+				'text' => sprintf('%02d', $i),
 				'value' => sprintf('%02d', $i)
 			);
 		}
@@ -20,22 +20,22 @@ class ControllerExtensionPaymentEway extends Controller {
 
 		for ($i = $today['year']; $i < $today['year'] + 11; $i++) {
 			$data['year_expire'][] = array(
-				'text'  => strftime('%Y', mktime(0, 0, 0, 1, 1, $i)),
+				'text' => strftime('%Y', mktime(0, 0, 0, 1, 1, $i)),
 				'value' => strftime('%Y', mktime(0, 0, 0, 1, 1, $i))
 			);
 		}
 
 		$this->load->model('checkout/order');
-
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
 		$amount = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false);
+
+		$data['text_testing'] = '';
 
 		if ($this->config->get('payment_eway_test')) {
 			$data['text_testing'] = $this->language->get('text_testing');
 			$data['Endpoint'] = 'Sandbox';
 		} else {
-			$data['text_testing'] = '';
 			$data['Endpoint'] = 'Production';
 		}
 
@@ -84,9 +84,8 @@ class ControllerExtensionPaymentEway extends Controller {
 			$item->SKU = (string)substr($product['product_id'], 0, 12);
 			$item->Description = (string)substr($product['name'], 0, 26);
 			$item->Quantity = strval($product['quantity']);
-			$item->UnitCost = strval($item_price * 100);
+			$item->UnitCost = $this->lowestDenomination($item_price, $order_info['currency_code']);
 			$item->Total = $this->lowestDenomination($item_total, $order_info['currency_code']);
-
 			$request->Items[] = $item;
 			$invoice_desc .= $product['name'] . ', ';
 		}
@@ -104,7 +103,6 @@ class ControllerExtensionPaymentEway extends Controller {
 			$item->Quantity = 1;
 			$item->UnitCost = $this->lowestDenomination($shipping, $order_info['currency_code']);
 			$item->Total = $this->lowestDenomination($shipping, $order_info['currency_code']);
-
 			$request->Items[] = $item;
 		}
 
@@ -119,7 +117,7 @@ class ControllerExtensionPaymentEway extends Controller {
 		$request->Payment->InvoiceReference = (string)substr($this->config->get('config_name'), 0, 40) . ' - #' . $order_info['order_id'];
 		$request->Payment->CurrencyCode = $order_info['currency_code'];
 
-		$request->RedirectUrl = $this->url->link('extension/payment/eway/callback', '', true);
+		$request->RedirectUrl = str_replace('&amp;', '&', $this->url->link('extension/payment/eway/callback', 'language=' . $this->config->get('config_language')));
 		if ($this->config->get('payment_eway_transaction_method') == 'auth') {
 			$request->Method = 'Authorise';
 		} else {
@@ -128,7 +126,7 @@ class ControllerExtensionPaymentEway extends Controller {
 		$request->TransactionType = 'Purchase';
 		$request->DeviceID = 'opencart-' . VERSION . ' eway-trans-2.1.2';
 		$request->CustomerIP = $this->request->server['REMOTE_ADDR'];
-		$request->PartnerID = '0f1bec3642814f89a2ea06e7d2800b7f';
+		$request->PartnerID = '0f1bec3642814f89a2ea06e7d2800b7f';		
 
 		$this->load->model('extension/payment/eway');
 		$template = 'eway';
@@ -157,7 +155,7 @@ class ControllerExtensionPaymentEway extends Controller {
 			$data['error'] = $lbl_error;
 		} else {
 			if ($this->config->get('payment_eway_paymode') == 'iframe') {
-				$data['callback'] = $this->url->link('extension/payment/eway/callback', 'AccessCode=' . $result->AccessCode, true);
+				$data['callback'] = $this->url->link('extension/payment/eway/callback', 'language=' . $this->config->get('config_language') . '&AccessCode=' . $result->AccessCode);
 				$data['SharedPaymentUrl'] = $result->SharedPaymentUrl;
 			}
 			$data['action'] = $result->FormActionURL;
@@ -165,22 +163,6 @@ class ControllerExtensionPaymentEway extends Controller {
 		}
 
 		return $this->load->view('extension/payment/' . $template, $data);
-	}
-
-	public function lowestDenomination($value, $currency) {
-		$power = $this->currency->getDecimalPlace($currency);
-
-		$value = (float)$value;
-
-		return (int)($value * pow(10, $power));
-	}
-
-	public function ValidateDenomination($value, $currency) {
-		$power = $this->currency->getDecimalPlace($currency);
-
-		$value = (float)$value;
-
-		return (int)($value * pow(10, '-' . $power));
 	}
 
 	public function callback() {
@@ -236,10 +218,10 @@ class ControllerExtensionPaymentEway extends Controller {
 
 			if ($is_error) {
 				if ($fraud) {
-					$this->response->redirect($this->url->link('checkout/failure', '', true));
+					$this->response->redirect($this->url->link('checkout/failure', 'language=' . $this->config->get('config_language')));
 				} else {
 					$this->session->data['error'] = $this->language->get('text_transaction_failed');
-					$this->response->redirect($this->url->link('checkout/checkout', '', true));
+					$this->response->redirect($this->url->link('checkout/checkout', 'language=' . $this->config->get('config_language')));
 				}
 			} else {
 				$order_id = $result->Options[0]->Value;
@@ -295,9 +277,24 @@ class ControllerExtensionPaymentEway extends Controller {
 					$this->model_extension_payment_eway->addFullCard($this->session->data['order_id'], $card_data);
 				}
 
-				$this->response->redirect($this->url->link('checkout/success', '', true));
+				$this->response->redirect($this->url->link('checkout/success', 'language=' . $this->config->get('config_language')));
 			}
 		}
 	}
+	
+	public function lowestDenomination($value, $currency) {
+        $power = $this->currency->getDecimalPlace($currency);
 
+        $value = (float)$value;
+
+        return (int)($value * pow(10, $power));
+    }
+	
+	public function validateDenomination($value, $currency) {
+        $power = $this->currency->getDecimalPlace($currency);
+
+        $value = (float)$value;
+
+        return (int)($value * pow(10, '-' . $power));
+    }
 }
