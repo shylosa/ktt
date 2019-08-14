@@ -14,6 +14,8 @@ libpng-dev \
 libzip-dev \
 libxml2-dev \
 mediainfo \
+mc \
+sudo\
 && docker-php-ext-install -j$(nproc) iconv mbstring mysqli pdo_mysql zip \
 && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 && docker-php-ext-install -j$(nproc) gd \
@@ -28,6 +30,7 @@ RUN yes | pecl install xdebug
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
+RUN echo "www-data:root" | chpasswd $$ && adduser www-data sudo
 
 WORKDIR /var/www/html
 USER www-data

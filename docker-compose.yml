@@ -1,9 +1,5 @@
 version: '3.7'
 
-networks:
-  ktt-net:
-    driver: bridge
-
 services:
   ktt_nginx:
     build: ./docker/nginx
@@ -47,19 +43,6 @@ services:
     networks:
       - ktt-net
 
-  ktt_opencart:
-    build: ./docker/opencart
-    container_name: ktt_opencart
-    ports:
-      - '8006:80'
-      - '446:443'
-    volumes:
-      - ktt_opencart_data:/var/www/html
-    depends_on:
-      - ktt_mysql
-    networks:
-      - ktt-net
-
   ktt_phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: ktt_phpmyadmin
@@ -75,11 +58,10 @@ services:
     networks:
       - ktt-net
 
+networks:
+  ktt-net:
+
 volumes:
   ktt_mysql_data:
-  ktt_opencart_data:
-    driver_opts:
-      type: none
-      device:  /home/serhii/sproject/ktt/opencart_data/
-      o: bind
+
 
