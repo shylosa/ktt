@@ -43,9 +43,9 @@ services:
     networks:
       - ktt-net
 
-  ktt_phpmyadmin:
+  ktt_pma:
     image: phpmyadmin/phpmyadmin
-    container_name: ktt_phpmyadmin
+    container_name: ktt_pma
     environment:
       - PMA_ARBITRARY=1
     restart: always

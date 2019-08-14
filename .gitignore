@@ -19,6 +19,6 @@
 
 /.idea/
 /docker/nginx/log/
-/opencart_data/image/
+/public/image/
 /docker/nginx/log/
-/opencart_data/install/
+/public/install/
