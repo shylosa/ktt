@@ -1,5 +1,0 @@
-2019/08/12 20:16:50 [emerg] 1#1: directive "root" is not terminated by ";" in /etc/nginx/conf.d/server.conf:5
-2019/08/12 20:19:48 [emerg] 1#1: directive "root" is not terminated by ";" in /etc/nginx/conf.d/server.conf:5
-2019/08/12 20:22:12 [emerg] 1#1: directive "root" is not terminated by ";" in /etc/nginx/conf.d/server.conf:5
-2019/08/12 20:35:37 [alert] 1#1: unknown process 502 exited on signal 1
-2019/08/13 16:30:20 [emerg] 1#1: host not found in upstream "ktt_php" in /etc/nginx/conf.d/server.conf:13
