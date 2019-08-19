@@ -12,30 +12,9 @@ class ControllerStartupStartup extends Controller {
 			}
 		}
 
-		// Set time zone
-		if ($this->config->get('config_timezone')) {
-			date_default_timezone_set($this->config->get('config_timezone'));
-
-			// Sync PHP and DB time zones.
-			$this->db->query("SET time_zone = '" . $this->db->escape(date('P')) . "'");
-		}
-
-		// Session
-		if (isset($this->request->cookie[$this->config->get('session_name')])) {
-			$session_id = $this->request->cookie[$this->config->get('session_name')];
-		} else {
-			$session_id = '';
-		}
-
-		$this->session->start($session_id);
-
-		setcookie($this->config->get('session_name'), $this->session->getId(), (ini_get('session.cookie_lifetime') ? (time() + ini_get('session.cookie_lifetime')) : 0), ini_get('session.cookie_path'), ini_get('session.cookie_domain'), ini_get('session.cookie_secure'), ini_get('session.cookie_httponly'));
-
-		// Response output compression level
-		if ($this->config->get('config_compression')) {
-			$this->response->setCompression($this->config->get('config_compression'));
-		}
-
+		// Theme
+		$this->config->set('template_cache', $this->config->get('developer_theme'));
+				
 		// Language
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "language` WHERE code = '" . $this->db->escape($this->config->get('config_admin_language')) . "'");
 		
@@ -77,6 +56,9 @@ class ControllerStartupStartup extends Controller {
 		$this->registry->set('cart', new Cart\Cart($this->registry));
 		
 		// Encryption
-		$this->registry->set('encryption', new Encryption());
+		$this->registry->set('encryption', new Encryption($this->config->get('config_encryption')));
+		
+		// OpenBay Pro
+		$this->registry->set('openbay', new Openbay($this->registry));
 	}
 }

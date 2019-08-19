@@ -22,3 +22,6 @@
 /public/image/
 /docker/nginx/log/
 /public/install/
+/public/system/storage/cache/
+/public/system/storage/logs/
+/mysql_data/

@@ -9,12 +9,12 @@ class ControllerErrorPermission extends Controller {
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
 		);
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link($this->request->get['route'], 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link($this->request->get['route'], 'user_token=' . $this->session->data['user_token'], true)
 		);
 
 		$data['header'] = $this->load->controller('common/header');
@@ -22,6 +22,5 @@ class ControllerErrorPermission extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 
 		$this->response->setOutput($this->load->view('error/permission', $data));
-
 	}
 }

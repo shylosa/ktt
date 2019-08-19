@@ -14,7 +14,7 @@ class ModelToolImage extends Model {
 			list($width_orig, $height_orig, $image_type) = getimagesize(DIR_IMAGE . $image_old);
 				 
 			if (!in_array($image_type, array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF))) { 
-				return HTTP_CATALOG . 'image/' . $image_old;
+				return DIR_IMAGE . $image_old;
 			}
  
 			$path = '';
@@ -38,6 +38,10 @@ class ModelToolImage extends Model {
 			}
 		}
 
-		return HTTP_CATALOG . 'image/' . $image_new;
+		if ($this->request->server['HTTPS']) {
+			return HTTPS_CATALOG . 'image/' . $image_new;
+		} else {
+			return HTTP_CATALOG . 'image/' . $image_new;
+		}
 	}
 }

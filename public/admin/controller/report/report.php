@@ -9,12 +9,12 @@ class ControllerReportReport extends Controller {
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
 		);
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('report/report', 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link('report/report', 'user_token=' . $this->session->data['user_token'], true)
 		);
 
 		$data['user_token'] = $this->session->data['user_token'];
@@ -42,7 +42,7 @@ class ControllerReportReport extends Controller {
 					'text'       => $this->language->get('extension')->get('heading_title'),
 					'code'       => $code,
 					'sort_order' => $this->config->get('report_' . $code . '_sort_order'),
-					'href'       => $this->url->link('report/report', 'user_token=' . $this->session->data['user_token'] . '&code=' . $code)
+					'href'       => $this->url->link('report/report', 'user_token=' . $this->session->data['user_token'] . '&code=' . $code, true)
 				);
 			}
 		}
@@ -53,7 +53,7 @@ class ControllerReportReport extends Controller {
 			$sort_order[$key] = $value['sort_order'];
 		}
 
-		array_multisort($sort_order, SORT_ASC, $data['reports']);
+		array_multisort($sort_order, SORT_ASC, $data['reports']);	
 		
 		if (isset($this->request->get['code'])) {
 			$data['report'] = $this->load->controller('extension/report/' . $this->request->get['code'] . '/report');

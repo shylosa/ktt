@@ -4,19 +4,17 @@ $_['site_base']         = HTTP_SERVER;
 $_['site_ssl']          = HTTP_SERVER;
 
 // Language
-$_['language_default']  = 'en-gb';
-$_['language_autoload'] = array('en-gb');
+$_['language_default']  = 'ru-ru';
+$_['language_autoload'] = array('ru-ru');
 
 // Session
-$_['session_autostart'] = true;
-$_['session_engine']    = 'file';
-$_['session_name']      = 'OCSESSID';
+$_['session_engine']     = 'file';
+$_['session_autostart']  = true;
+$_['session_name']       = 'OCSESSID';
 
 // Template
 $_['template_engine']   = 'twig';
-
-// Error
-$_['error_display']     = true;
+$_['template_cache']    = true;
 
 // Actions
 $_['action_default']    = 'install/step_1';
@@ -29,4 +27,8 @@ $_['action_pre_action'] = array(
 );
 
 // Action Events
-$_['action_event'] = array();
+$_['action_event'] = array(
+    'view/*/before' => array(
+		'event/theme'
+	)
+);

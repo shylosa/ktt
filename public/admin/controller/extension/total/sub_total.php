@@ -14,7 +14,7 @@ class ControllerExtensionTotalSubTotal extends Controller {
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
-			$this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total'));
+			$this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true));
 		}
 
 		if (isset($this->error['warning'])) {
@@ -27,22 +27,22 @@ class ControllerExtensionTotalSubTotal extends Controller {
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
 		);
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_extension'),
-			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true)
 		);
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('extension/total/sub_total', 'user_token=' . $this->session->data['user_token'])
+			'href' => $this->url->link('extension/total/sub_total', 'user_token=' . $this->session->data['user_token'], true)
 		);
 
-		$data['action'] = $this->url->link('extension/total/sub_total', 'user_token=' . $this->session->data['user_token']);
+		$data['action'] = $this->url->link('extension/total/sub_total', 'user_token=' . $this->session->data['user_token'], true);
 
-		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total');
+		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true);
 
 		if (isset($this->request->post['total_sub_total_status'])) {
 			$data['total_sub_total_status'] = $this->request->post['total_sub_total_status'];
@@ -50,10 +50,10 @@ class ControllerExtensionTotalSubTotal extends Controller {
 			$data['total_sub_total_status'] = $this->config->get('total_sub_total_status');
 		}
 
-		if (isset($this->request->post['total_sub_total_sort_order'])) {
-			$data['total_sub_total_sort_order'] = $this->request->post['total_sub_total_sort_order'];
+		if (isset($this->request->post['sub_total_sort_order'])) {
+			$data['sub_total_sort_order'] = $this->request->post['sub_total_sort_order'];
 		} else {
-			$data['total_sub_total_sort_order'] = $this->config->get('total_sub_total_sort_order');
+			$data['sub_total_sort_order'] = $this->config->get('sub_total_sort_order');
 		}
 
 		$data['header'] = $this->load->controller('common/header');

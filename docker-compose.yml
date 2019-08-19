@@ -1,21 +1,6 @@
 version: '3.7'
 
 services:
-  ktt_nginx:
-    build: ./docker/nginx
-    container_name: ktt_nginx
-    ports:
-      - '86:80'
-    volumes:
-      - ./docker/nginx/conf:/etc/nginx/conf.d
-      - .:/var/www/html
-      - ./docker/nginx/log/:/var/log/nginx
-      - /tmp:/tmp
-    depends_on:
-      - ktt_php
-    networks:
-      - ktt-net
-
   ktt_php:
     build: ./docker/php
     container_name: ktt_php
@@ -43,6 +28,20 @@ services:
     networks:
       - ktt-net
 
+  ktt_opencart:
+    image: aamservices/opencart:latest
+    container_name: ktt_opencart
+    restart: always
+    ports:
+      - '86:80'
+      - '446:443'
+    volumes:
+      - ./public:/var/www/html
+    depends_on:
+      - ktt_mysql
+    networks:
+      - ktt-net
+
   ktt_pma:
     image: phpmyadmin/phpmyadmin
     container_name: ktt_pma
@@ -63,5 +62,4 @@ networks:
 
 volumes:
   ktt_mysql_data:
-
 
