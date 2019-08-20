@@ -30,7 +30,7 @@ RUN yes | pecl install xdebug
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
-RUN echo "www-data:root" | chpasswd $$ && adduser www-data sudo
+#RUN echo "www-data:root" | chpasswd $$ && adduser www-data sudo
 
 WORKDIR /var/www/html
 USER www-data

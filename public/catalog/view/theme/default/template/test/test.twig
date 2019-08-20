@@ -1,12 +1,12 @@
 {{ header }}
 
-<?php print_r($data`); ?>
-
+{#<?php print_r($data); ?>#}
+<?php phpinfo(); ?>
 
 <div id="product-search" class="container">
   <ul class="breadcrumb">
     {% for breadcrumb in breadcrumbs %}
-    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
     {% endfor %}
   </ul>
 
@@ -20,21 +20,21 @@
     {% endif %}
     
     <div id="content" class="{{ class }}">{{ content_top }}
-      <h2>Тестовая страница</h2>
+      <h2>Страница Serhio9</h2>
         <h1>Products</h1>
 
 <!-- Тут гуглить как работает TWIG шаблонизатор -->
 
-{# пример вызова переменных из data #}
-    
-    {% for categorie in categories %}
-      <li>{{ categorie.name }}</li>
+      <!--Пример вызова переменных из data -->
 
-      {% for product in products %}  
-        <li>{{ product.name }}</li>
-      {% endfor %}
-            
-    {% endfor %}
+         {% for categorie in categories %}
+           <ul class="font-weight-bold">{{ categorie.name }}</ul>
+             <ul>
+             {% for product in products %}
+                 <li>{{ product.name }}</li>
+             {% endfor %}
+             </ul>
+         {% endfor %}
 
     {{ content_bottom }}</div>
     {{ column_right }}</div>

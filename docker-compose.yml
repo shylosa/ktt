@@ -29,7 +29,7 @@ services:
       - ktt-net
 
   ktt_opencart:
-    image: aamservices/opencart:latest
+    build: ./docker/opencart
     container_name: ktt_opencart
     restart: always
     ports:
