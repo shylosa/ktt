@@ -107,6 +107,7 @@ class Twig_Environment
             'optimizations' => -1,
         ), $options);
 
+
         $this->debug = (bool) $options['debug'];
         $this->charset = strtoupper($options['charset']);
         $this->baseTemplateClass = $options['base_template_class'];
@@ -118,6 +119,7 @@ class Twig_Environment
         $this->addExtension(new Twig_Extension_Escaper($options['autoescape']));
         $this->addExtension(new Twig_Extension_Optimizer($options['optimizations']));
         $this->staging = new Twig_Extension_Staging();
+        $this->addExtension(new Twig_Extension_Debug());
 
         // For BC
         if (is_string($this->originalCache)) {
